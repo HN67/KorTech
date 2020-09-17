@@ -6,8 +6,25 @@ from redbot.core.config import Config
 class KorTechPrime(commands.Cog):
     """10KI Cog to facilitate Update Management"""
 
+    def __init__(self, bot):
+        self.bot = bot
+        self.updatetime = False
+
     @commands.command()
-    async def here(self, ctx: commands.Context):
+    async def isupdate(self, ctx, arg):
+                """Designate whether its UpdateTime or not, please use Yes or No"""
+
+                if arg.lower() == "yes":
+                   self.updatetime = True
+                   await ctx.send("Update is running!")
+                elif arg.lower() == "no":
+                   self.updatetime = False
+                   await ctx.send("It's no longer time for Update")
+                else:
+                    await ctx.send("Please answer Yes or No")
+
+    @commands.command()
+    async def imhere(self, ctx: commands.Context):
                 """Mark that the user is present for update."""
 
                 guild = ctx.message.guild
@@ -17,12 +34,15 @@ class KorTechPrime(commands.Cog):
                 role_ally = discord.utils.get(ctx.guild.roles, name="Allied Military")
                 role_upd = discord.utils.get(ctx.guild.roles, name="Updating")
 
-                if (role_memb in ctx.author.roles) or (role_ally in ctx.author.roles):
-                    await ctx.author.add_roles(role_upd)
-                    emoji = '<:tito:351110740259897349>'
-                    await ctx.message.add_reaction(emoji)
-                else:
+                if self.updatetime == True:
+                    if (role_memb in ctx.author.roles) or (role_ally in ctx.author.roles):
+                        await ctx.author.add_roles(role_upd)
+                        emoji = '<:tito:351110740259897349>'
+                        await ctx.message.add_reaction(emoji)
+                    else:
                         await ctx.send("You are not masked as TITO Member or Allied Military")
+                else:
+                    await ctx.send("Try again when its time for Update!")
 
     @commands.command()
     async def nohere(self, ctx: commands.Context):
